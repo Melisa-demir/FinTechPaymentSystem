@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="FinTechPaymentSystem.API/FinTechPaymentSystem.API.csproj" />
+  <Project Path="FinTechPaymentSystem.Application/FinTechPaymentSystem.Application.csproj" />
+  <Project Path="FinTechPaymentSystem.Domain/FinTechPaymentSystem.Domain.csproj" />
+  <Project Path="FinTechPaymentSystem.Infrastructure/FinTechPaymentSystem.Infrastructure.csproj" />
+  <Project Path="FinTechPaymentSystem.Shared/FinTechPaymentSystem.Shared.csproj" />
+</Solution>
