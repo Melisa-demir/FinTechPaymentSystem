@@ -24,9 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Cache\" />
-    <Folder Include="Identity\" />
     <Folder Include="Messaging\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>
