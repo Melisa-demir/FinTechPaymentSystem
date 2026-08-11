@@ -45,11 +45,13 @@ builder.Services
             };
     });
 
-builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddDbContext<FinTechDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

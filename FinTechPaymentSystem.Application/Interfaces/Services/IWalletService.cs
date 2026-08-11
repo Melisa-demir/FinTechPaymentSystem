@@ -10,5 +10,6 @@ namespace FinTechPaymentSystem.Application.Interfaces.Services
     public interface IWalletService
     {
         Task<WalletResponse> GetMyWalletAsync(int userId);
+        Task<WalletResponse> DepositAsync(int userId, decimal amount);
     }
 }
