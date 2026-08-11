@@ -15,5 +15,19 @@ namespace FinTechPaymentSystem.Infrastructure.Data
         {
         }
     public DbSet<User> Users { get; set; }
+    public DbSet<Wallet> Wallets { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Wallet>()
+                .HasOne(w => w.User)
+                .WithOne(u => u.Wallet)
+                .HasForeignKey<Wallet>(w => w.UserId);
+
+            modelBuilder.Entity<Wallet>()
+                .Property(x => x.Balance)
+                .HasPrecision(18, 2);
+        }
     }
 }

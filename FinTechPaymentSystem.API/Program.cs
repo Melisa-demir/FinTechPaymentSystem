@@ -1,6 +1,7 @@
 using System.Text;
 using FinTechPaymentSystem.Application.Interfaces.Services;
 using FinTechPaymentSystem.Application.Services.Auth;
+using FinTechPaymentSystem.Application.Services.Wallets;
 using FinTechPaymentSystem.Domain.Interfaces;
 using FinTechPaymentSystem.Infrastructure.Data;
 using FinTechPaymentSystem.Infrastructure.Identity;
@@ -46,6 +47,7 @@ builder.Services
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 

@@ -11,5 +11,6 @@
         public string PasswordHash { get; set; } = null!;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public Wallet? Wallet { get; set; }
     }
 }

@@ -8,13 +8,16 @@ namespace FinTechPaymentSystem.Application.Services.Auth
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IWalletRepository _walletRepository;
         private readonly ITokenService _tokenService;
 
         public AuthService(
             IUserRepository userRepository,
+            IWalletRepository walletRepository,
             ITokenService tokenService)
         {
             _userRepository = userRepository;
+            _walletRepository = walletRepository;
             _tokenService = tokenService;
         }
 
@@ -40,6 +43,15 @@ namespace FinTechPaymentSystem.Application.Services.Auth
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
+
+            var wallet = new Wallet
+            {
+                UserId = user.Id,
+                Balance = 0
+            };
+
+            await _walletRepository.AddAsync(wallet);
+            await _walletRepository.SaveChangesAsync();
         }
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
