@@ -53,5 +53,44 @@ namespace FinTechPaymentSystem.API.Controllers
 
             return Ok(wallet);
         }
+
+        [HttpPost("withdraw")]
+        public async Task<IActionResult> Withdraw(WithdrawRequest request)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim is null)
+            {
+                return Unauthorized();
+            }
+
+            var userId = int.Parse(userIdClaim.Value);
+
+            var wallet = await _walletService.WithdrawAsync(
+                userId,
+                request.Amount);
+
+            return Ok(wallet);
+        }
+
+        [HttpPost("transfer")]
+        public async Task<IActionResult> Transfer(TransferRequest request)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim is null)
+            {
+                return Unauthorized();
+            }
+
+            var senderUserId = int.Parse(userIdClaim.Value);
+
+            var wallet = await _walletService.TransferAsync(
+                senderUserId,
+                request.ReceiverUserId,
+                request.Amount);
+
+            return Ok(wallet);
+        }
     }
 }

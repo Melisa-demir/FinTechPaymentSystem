@@ -11,5 +11,7 @@ namespace FinTechPaymentSystem.Application.Interfaces.Services
     {
         Task<WalletResponse> GetMyWalletAsync(int userId);
         Task<WalletResponse> DepositAsync(int userId, decimal amount);
+        Task<WalletResponse> WithdrawAsync(int userId, decimal amount);
+        Task<WalletResponse> TransferAsync(int senderUserId, int receiverUserId, decimal amount);
     }
 }

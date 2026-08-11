@@ -53,5 +53,82 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
                 Balance = wallet.Balance
             };
         }
+        public async Task<WalletResponse> WithdrawAsync(int userId, decimal amount)
+        {
+            if (amount <= 0)
+            {
+                throw new Exception("Amount must be greater than zero");
+            }
+
+            var wallet = await _walletRepository.GetByUserIdAsync(userId);
+
+            if (wallet is null)
+            {
+                throw new Exception("Wallet not found");
+            }
+
+            if (wallet.Balance < amount)
+            {
+                throw new Exception("Insufficient balance");
+            }
+
+            wallet.Balance -= amount;
+
+            await _walletRepository.SaveChangesAsync();
+
+            return new WalletResponse
+            {
+                Id = wallet.Id,
+                Balance = wallet.Balance
+            };
+        }
+
+        public async Task<WalletResponse> TransferAsync(
+    int senderUserId,
+    int receiverUserId,
+    decimal amount)
+        {
+            if (amount <= 0)
+            {
+                throw new Exception("Amount must be greater than zero");
+            }
+
+            if (senderUserId == receiverUserId)
+            {
+                throw new Exception("You cannot transfer money to yourself");
+            }
+
+            var senderWallet =
+                await _walletRepository.GetByUserIdAsync(senderUserId);
+
+            if (senderWallet is null)
+            {
+                throw new Exception("Sender wallet not found");
+            }
+
+            var receiverWallet =
+                await _walletRepository.GetByUserIdAsync(receiverUserId);
+
+            if (receiverWallet is null)
+            {
+                throw new Exception("Receiver wallet not found");
+            }
+
+            if (senderWallet.Balance < amount)
+            {
+                throw new Exception("Insufficient balance");
+            }
+
+            senderWallet.Balance -= amount;
+            receiverWallet.Balance += amount;
+
+            await _walletRepository.SaveChangesAsync();
+
+            return new WalletResponse
+            {
+                Id = senderWallet.Id,
+                Balance = senderWallet.Balance
+            };
+        }
     }
 }
