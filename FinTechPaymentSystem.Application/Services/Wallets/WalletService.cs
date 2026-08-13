@@ -7,10 +7,14 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
     public class WalletService : IWalletService
     {
         private readonly IWalletRepository _walletRepository;
+        private readonly ITransactionRepository _transactionRepository;
 
-        public WalletService(IWalletRepository walletRepository)
+        public WalletService(
+            IWalletRepository walletRepository,
+            ITransactionRepository transactionRepository)
         {
             _walletRepository = walletRepository;
+            _transactionRepository = transactionRepository;
         }
 
         public async Task<WalletResponse> GetMyWalletAsync(int userId)
@@ -29,7 +33,9 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
             };
         }
 
-        public async Task<WalletResponse> DepositAsync(int userId, decimal amount)
+        public async Task<WalletResponse> DepositAsync(
+            int userId,
+            decimal amount)
         {
             if (amount <= 0)
             {
@@ -45,6 +51,16 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
 
             wallet.Balance += amount;
 
+            var transaction =
+                new FinTechPaymentSystem.Domain.Entities.Transaction
+                {
+                    WalletId = wallet.Id,
+                    Amount = amount,
+                    Type = "Deposit"
+                };
+
+            await _transactionRepository.AddAsync(transaction);
+
             await _walletRepository.SaveChangesAsync();
 
             return new WalletResponse
@@ -53,7 +69,10 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
                 Balance = wallet.Balance
             };
         }
-        public async Task<WalletResponse> WithdrawAsync(int userId, decimal amount)
+
+        public async Task<WalletResponse> WithdrawAsync(
+            int userId,
+            decimal amount)
         {
             if (amount <= 0)
             {
@@ -74,6 +93,16 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
 
             wallet.Balance -= amount;
 
+            var transaction =
+                new FinTechPaymentSystem.Domain.Entities.Transaction
+                {
+                    WalletId = wallet.Id,
+                    Amount = amount,
+                    Type = "Withdraw"
+                };
+
+            await _transactionRepository.AddAsync(transaction);
+
             await _walletRepository.SaveChangesAsync();
 
             return new WalletResponse
@@ -84,9 +113,9 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
         }
 
         public async Task<WalletResponse> TransferAsync(
-    int senderUserId,
-    int receiverUserId,
-    decimal amount)
+            int senderUserId,
+            int receiverUserId,
+            decimal amount)
         {
             if (amount <= 0)
             {
@@ -95,7 +124,8 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
 
             if (senderUserId == receiverUserId)
             {
-                throw new Exception("You cannot transfer money to yourself");
+                throw new Exception(
+                    "You cannot transfer money to yourself");
             }
 
             var senderWallet =
@@ -121,6 +151,27 @@ namespace FinTechPaymentSystem.Application.Services.Wallets
 
             senderWallet.Balance -= amount;
             receiverWallet.Balance += amount;
+
+            var senderTransaction =
+                new FinTechPaymentSystem.Domain.Entities.Transaction
+                {
+                    WalletId = senderWallet.Id,
+                    RelatedWalletId = receiverWallet.Id,
+                    Amount = amount,
+                    Type = "TransferOut"
+                };
+
+            var receiverTransaction =
+                new FinTechPaymentSystem.Domain.Entities.Transaction
+                {
+                    WalletId = receiverWallet.Id,
+                    RelatedWalletId = senderWallet.Id,
+                    Amount = amount,
+                    Type = "TransferIn"
+                };
+
+            await _transactionRepository.AddAsync(senderTransaction);
+            await _transactionRepository.AddAsync(receiverTransaction);
 
             await _walletRepository.SaveChangesAsync();
 

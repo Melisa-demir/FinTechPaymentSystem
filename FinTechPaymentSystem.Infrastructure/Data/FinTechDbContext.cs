@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FinTechPaymentSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using FinTechPaymentSystem.Domain.Entities;
 
 namespace FinTechPaymentSystem.Infrastructure.Data
 {
@@ -14,8 +15,9 @@ namespace FinTechPaymentSystem.Infrastructure.Data
         public FinTechDbContext(DbContextOptions<FinTechDbContext> options) : base(options)
         {
         }
-    public DbSet<User> Users { get; set; }
-    public DbSet<Wallet> Wallets { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Wallet> Wallets { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,6 +30,16 @@ namespace FinTechPaymentSystem.Infrastructure.Data
             modelBuilder.Entity<Wallet>()
                 .Property(x => x.Balance)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Transaction>()
+                .Property(x => x.Amount)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Transaction>()
+                .HasOne(x => x.Wallet)
+                .WithMany()
+                .HasForeignKey(x => x.WalletId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
